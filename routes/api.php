@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 //?api/v1
 Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\api\v1'], function () {
-    Route::apiResource('/notes', NoteController::class)->middleware('auth:sanctum');
+    Route::apiResource('/notes', NoteController::class);
     Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
