@@ -51,10 +51,10 @@ class AuthController extends Controller
 
         //validating user
         if (!$user) {
-            $contnet = "User not found";
+            $content = "User not found";
             $status = 404;
         } elseif (!$isAuth) {
-            $contnet = "Credentials didn't match";
+            $content = "Credentials didn't match";
             $status = 404;
         } else {
             Auth::login($user);
@@ -76,7 +76,7 @@ class AuthController extends Controller
 
     public function logout()
     {
-        $user = auth('sanctum')->user();
+        $user = User::findOrFail(auth('sanctum')->id());
         $user->tokens()->delete();
 
         return response()->json([
