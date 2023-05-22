@@ -18,7 +18,7 @@ class NoteController extends Controller
     {
         $filter = new NoteFilter();
         $queryItems = $filter->transform($request);
-        $notes = Note::where($queryItems)->where('user_id', auth('sanctum')->id());
+        $notes = Note::where($queryItems)->where('user_id', auth('sanctum')->id())->latest();
         $data = new NoteCollection($notes->paginate()->appends($request->query()));
 
         return $data;
