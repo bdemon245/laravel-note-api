@@ -16,10 +16,18 @@ class NoteController extends Controller
 {
     public function index(Request $request)
     {
+        $isAuth = auth('sanctum')->user() !== null;
+        //default data if user not found
+        $data = [
+            'success' => false,
+            'message' => 'Please login to sync notes'
+        ];
         $filter = new NoteFilter();
         $queryItems = $filter->transform($request);
-        $notes = Note::where($queryItems)->where('user_id', auth('sanctum')->id())->latest();
-        $data = new NoteCollection($notes->paginate()->appends($request->query()));
+        if ($isAuth) {
+            $notes = Note::where($queryItems)->where('user_id', auth('sanctum')->id())->latest();
+            $data = new NoteCollection($notes->paginate()->appends($request->query()));//update data with notes if user found
+        }
 
         return $data;
     }
