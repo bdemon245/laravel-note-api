@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -39,12 +40,18 @@ class AuthController extends Controller
 
 
         //validate the form request
-        $request->validate(
-            [
-                "email" => "required|email",
-                "password" => "required",
-            ]
-        );
+        try {
+            $request->validate(
+                [
+                    "email" => "required|email",
+                    "password" => "required",
+                ]
+            );
+        } catch (ValidationException $e) {
+            return response()->json([
+                'errors'=> $e->errors(),
+            ], 433);
+        }
         //collects user and checks if it is authenticated or not
         $user = User::where('email', $request->email)->first();
         $isAuth = Hash::check($request->password, $user->password);
