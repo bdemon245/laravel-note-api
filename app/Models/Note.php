@@ -8,15 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Note extends Model
 {
     use HasFactory;
+    protected $guarded = [];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
-    protected $fillable = [
-        'user_id',
-        'title',
-        'content',
-    ];
+    function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
 }

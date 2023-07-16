@@ -25,6 +25,7 @@ class NoteResource extends JsonResource
             'id' => $this->id,
             'userId' => $this->user_id,
             'title' => $this->title,
+            'tags' => $this->tags,
             'content' => $decryptedData,
             'createdAt' => $this->created_at,
             'updatedAt' => $this->updated_at,

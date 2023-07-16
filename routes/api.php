@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\api\v1\NoteController;
-use App\Http\Controllers\api\v1\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\api\v1\TagController;
+use App\Http\Controllers\api\v1\AuthController;
+use App\Http\Controllers\api\v1\NoteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 //?api/v1
 Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\api\v1'], function () {
     Route::apiResource('/notes', NoteController::class);
+    Route::apiResource('/tags', TagController::class);
     Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);

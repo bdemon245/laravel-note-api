@@ -1,0 +1,12 @@
+GET http://localhost:8000/api/v1/tags HTTP/1.1
+Content-Type: application/json
+Authorization:Bearer 2|ZadAG9Vyr2O828GCG9rbIUZCQvuEYN9UfdL1njK3
+
+
+# POST http://localhost:8000/api/v1/login HTTP/1.1
+# Content-Type: application/json
+
+# {
+#     "email": "test@gmail.com",
+#     "password": "password"
+# }

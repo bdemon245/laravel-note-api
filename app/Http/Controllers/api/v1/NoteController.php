@@ -25,7 +25,7 @@ class NoteController extends Controller
         $filter = new NoteFilter();
         $queryItems = $filter->transform($request);
         if ($isAuth) {
-            $notes = Note::where($queryItems)->where('user_id', auth('sanctum')->id())->latest();
+            $notes = Note::with('tags')->where($queryItems)->where('user_id', auth('sanctum')->id())->latest();
             $data = new NoteCollection($notes->paginate()->appends($request->query()));//update data with notes if user found
         }
 
