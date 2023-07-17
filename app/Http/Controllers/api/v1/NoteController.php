@@ -29,7 +29,7 @@ class NoteController extends Controller
             $data = new NoteCollection($notes->paginate()->appends($request->query()));//update data with notes if user found
         }
 
-        return $data;
+        return response($data);
     }
 
 
