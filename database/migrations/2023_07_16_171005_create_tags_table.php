@@ -16,16 +16,13 @@ return new class extends Migration
             $table->text('value');
             $table->timestamps();
         });
-        Schema::create('note_tag', function (Blueprint $table) {
+        Schema::create('taggables', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('note_id')
-                ->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
             $table->foreignId('tag_id')
                 ->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->morphs('taggable');
             $table->timestamp('created_at')->default(now());
             $table->timestamp('updated_at')->default(now());
         });

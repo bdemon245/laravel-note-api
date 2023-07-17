@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -13,7 +14,8 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::orderBy('value')->get();
+        $user = User::find(auth('sanctum')->id());
+        $tags = $user->tags;
         return response()->json([
             'tags' => $tags
         ]);
