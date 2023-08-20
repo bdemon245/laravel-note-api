@@ -6,6 +6,7 @@ use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use GuzzleHttp\Promise\Create;
 
 class TagController extends Controller
 {
@@ -22,35 +23,21 @@ class TagController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
-    }
+        $user = User::find(auth('sanctum')->id());
+        $tag = Tag::create([
+            'user_id' => $user->id,
+            'value' => $request->tag,
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Tag $tag)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Tag $tag)
-    {
-        //
+        return response()->json([
+            'data' => $tag,
+            'success' => true,
+            'message' => 'Tag created'
+        ], 201);
     }
 
     /**
@@ -58,7 +45,14 @@ class TagController extends Controller
      */
     public function update(Request $request, Tag $tag)
     {
-        //
+        $tag = User::find(auth('sanctum')->id())->tags()->where('id', $tag->id)->firstOrFail();
+        $tag->update(['value' => $request->tag]);
+
+        return response()->json([
+            'data' => $tag,
+            'success' => true,
+            'message' => 'Tag updated'
+        ], 200);
     }
 
     /**
@@ -66,6 +60,12 @@ class TagController extends Controller
      */
     public function destroy(Tag $tag)
     {
-        //
+        $tag->delete();
+
+        return response()->json([
+            'data' => null,
+            'success' => true,
+            'message' => 'Tag deleted'
+        ], 200);
     }
 }

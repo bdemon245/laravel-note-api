@@ -10,9 +10,9 @@ class Tag extends Model
     use HasFactory;
     protected $fillable = ['value'];
 
-    function users()
+    function user()
     {
-        return $this->morphedByMany(User::class, 'taggable');
+        return $this->belongsTo(User::class);
     }
     function notes()
     {

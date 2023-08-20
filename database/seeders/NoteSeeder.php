@@ -25,14 +25,17 @@ class NoteSeeder extends Seeder
             'Bootstrap',
             'Laravel'
         ];
+        $user = User::find(1);
         foreach ($tags as $key => $value) {
-            $tag = Tag::create(['value' => $value]);
-            User::find(1)->tags()->attach($tag);
+            $tag = Tag::create([
+                'user_id' => $user->id,
+                'value' => $value
+            ]);
         }
         foreach (range(1, 50) as $key) {
             DB::table('taggables')->insert([
                 'tag_id' => random_int(1, 5),
-                'taggable_type' => fake()->randomElement(['App\Models\Note', 'App\Models\User']),
+                'taggable_type' => fake()->randomElement(['App\Models\Note']),
                 'taggable_id' => random_int(1, 50),
             ]);
         }

@@ -17,8 +17,9 @@ class User extends Authenticatable
         return $this->hasMany(Note::class);
     }
 
-    function tags() {
-        return $this->morphToMany(Tag::class, 'taggable');
+    function tags()
+    {
+        return $this->hasMany(Tag::class);
     }
 
     /**
