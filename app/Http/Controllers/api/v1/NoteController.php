@@ -10,6 +10,7 @@ use App\Http\Resources\v1\NoteResource;
 use App\Http\Resources\v1\NoteCollection;
 use App\Http\Requests\v1\StoreNoteRequest;
 use App\Http\Requests\v1\UpdateNoteRequest;
+use Exception;
 use Illuminate\Support\Facades\Crypt;
 
 class NoteController extends Controller
@@ -25,8 +26,8 @@ class NoteController extends Controller
         $filter = new NoteFilter();
         $queryItems = $filter->transform($request);
         if ($isAuth) {
-            $notes = Note::with('tags')->where($queryItems)->where('user_id', auth('sanctum')->id())->latest();
-            $data = new NoteCollection($notes->paginate()->appends($request->query()));//update data with notes if user found
+            $notes = Note::with('tags')->where($queryItems)->where('user_id', auth('sanctum')->id())->latest()->paginate(20);
+            $data = new NoteCollection($notes); //update data with notes if user found
         }
 
         return response($data);
@@ -59,12 +60,21 @@ class NoteController extends Controller
      */
     public function store(StoreNoteRequest $request)
     {
-        $note = Note::create([
-            'user_id' => auth('sanctum')->id(),
-            'title' => $request->title,
-            'content' => Crypt::encryptString($request->content),
-        ]);
-        $content = new NoteResource($note);
+        try {
+            $note = Note::create([
+                'user_id' => auth('sanctum')->id(),
+                'title' => $request->title,
+                'content' => $request->content,
+            ]);
+            $content = new NoteResource($note);
+        } catch (Exception $e) {
+            $content = [
+                'data' => null,
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+            return response($content, 400);
+        }
         return response($content, 201);
     }
     /**

@@ -19,8 +19,8 @@ use App\Http\Controllers\api\v1\NoteController;
 
 //?api/v1
 Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\api\v1'], function () {
-    Route::apiResource('/notes', NoteController::class);
-    Route::apiResource('/tags', TagController::class);
+    Route::apiResource('/notes', NoteController::class)->middleware('auth:sanctum');
+    Route::apiResource('/tags', TagController::class)->middleware('auth:sanctum');
     Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);

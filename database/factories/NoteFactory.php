@@ -20,7 +20,7 @@ class NoteFactory extends Factory
         return [
             'user_id' => 1,
             'title' => $this->faker->sentence(3),
-            'content' => Crypt::encryptString($this->faker->paragraph()),
+            'content' => $this->faker->paragraph(),
         ];
     }
 }
