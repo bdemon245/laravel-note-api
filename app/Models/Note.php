@@ -11,7 +11,7 @@ class Note extends Model
     use HasFactory;
     protected $guarded = [];
     protected $casts = [
-        'content' => Encrypted::class
+        'content' => 'encrypted'
     ];
 
     public function user()
