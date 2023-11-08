@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tag extends Model
-{
+class Tag extends Model {
     use HasFactory;
-    protected $fillable = ['value'];
+    protected $fillable = [
+        'user_id',
+        'value'
+    ];
 
-    function user()
-    {
+    function user() {
         return $this->belongsTo(User::class);
     }
-    function notes()
-    {
+    function notes() {
         return $this->morphedByMany(Note::class, 'taggable');
     }
 }

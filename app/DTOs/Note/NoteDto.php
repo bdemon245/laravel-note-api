@@ -2,7 +2,8 @@
 
 namespace App\DTOs\Note;
 
-use App\Http\Requests\Note\Api\NoteApiRequest;
+use App\Http\Requests\Api\Note\NoteApiRequest;
+
 
 class NoteDto {
     public function __construct(

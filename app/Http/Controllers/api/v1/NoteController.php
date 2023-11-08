@@ -10,8 +10,7 @@ use App\Services\Note\NoteService;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\NoteResource;
 use App\Http\Resources\v1\NoteCollection;
-use App\Http\Requests\Note\Api\NoteApiRequest;
-use App\Http\Requests\Note\Api\NoteUpdateApiRequest;
+use App\Http\Requests\Api\Note\NoteApiRequest;
 
 class NoteController extends Controller {
     public function __construct(protected NoteService $service) {

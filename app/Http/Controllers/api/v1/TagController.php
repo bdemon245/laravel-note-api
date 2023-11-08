@@ -4,17 +4,21 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Models\Tag;
 use App\Models\User;
+use App\DTOs\Tag\TagDto;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use GuzzleHttp\Promise\Create;
+use App\Services\Tag\TagService;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Tag\TagApiRequest;
 
-class TagController extends Controller
-{
+class TagController extends Controller {
+
+    public function __construct(protected TagService $service) {
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
+    public function index() {
         $user = User::find(auth('sanctum')->id());
         $tags = $user->tags;
         return response()->json([
@@ -25,16 +29,11 @@ class TagController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $user = User::find(auth('sanctum')->id());
-        $tag = Tag::create([
-            'user_id' => $user->id,
-            'value' => $request->tag,
-        ]);
+    public function store(TagApiRequest $request) {
+        $tag = $this->service->store(TagDto::transformApiRequest($request));
 
         return response()->json([
-            'data' => $tag,
+            'data'    => $tag,
             'success' => true,
             'message' => 'Tag created'
         ], 201);
@@ -43,13 +42,12 @@ class TagController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Tag $tag)
-    {
+    public function update(TagApiRequest $request, Tag $tag) {
         $tag = User::find(auth('sanctum')->id())->tags()->where('id', $tag->id)->firstOrFail();
-        $tag->update(['value' => $request->tag]);
+        $tag = $this->service->update(TagDto::transformApiRequest($request), $tag);
 
         return response()->json([
-            'data' => $tag,
+            'data'    => $tag,
             'success' => true,
             'message' => 'Tag updated'
         ], 200);
@@ -58,12 +56,11 @@ class TagController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Tag $tag)
-    {
-        $tag->delete();
+    public function destroy(Tag $tag) {
+        $this->service->delete($tag);
 
         return response()->json([
-            'data' => null,
+            'data'    => null,
             'success' => true,
             'message' => 'Tag deleted'
         ], 200);
