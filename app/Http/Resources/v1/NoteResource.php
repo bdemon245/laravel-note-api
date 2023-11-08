@@ -11,12 +11,6 @@ use Illuminate\Contracts\Encryption\DecryptException;
 class NoteResource extends JsonResource
 {
     /**
-     * The "data" wrapper that should be applied.
-     *
-     * @var string|null
-     */
-    public static $wrap = 'note';
-    /**
      * Transform the resource into an array.
      *
      * @return array<string, mixed>

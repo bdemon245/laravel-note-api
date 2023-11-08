@@ -12,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    
     public function register(StoreUserRequest $request)
     {
         $user = User::create([
@@ -49,7 +50,7 @@ class AuthController extends Controller
             );
         } catch (ValidationException $e) {
             return response()->json([
-                'errors'=> $e->errors(),
+                'errors' => $e->errors(),
             ], 433);
         }
         //collects user and checks if it is authenticated or not

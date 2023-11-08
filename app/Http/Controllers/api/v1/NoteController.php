@@ -2,125 +2,76 @@
 
 namespace App\Http\Controllers\api\v1;
 
+use App\Http\Requests\Note\Api\NoteUpdateApiRequest;
 use App\Models\Note;
+use App\DTOs\Note\NoteDto;
 use Illuminate\Http\Request;
 use App\Filters\v1\NoteFilter;
+use App\Services\Note\NoteService;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Crypt;
 use App\Http\Resources\v1\NoteResource;
 use App\Http\Resources\v1\NoteCollection;
 use App\Http\Requests\v1\StoreNoteRequest;
 use App\Http\Requests\v1\UpdateNoteRequest;
-use Exception;
-use Illuminate\Support\Facades\Crypt;
+use App\Http\Requests\Note\Api\NoteStoreApiRequest;
 
-class NoteController extends Controller
-{
-    public function index(Request $request)
-    {
-        $isAuth = auth('sanctum')->user() !== null;
-        //default data if user not found
-        $data = [
-            'success' => false,
-            'message' => 'Please login to sync notes'
-        ];
+class NoteController extends Controller {
+    public function __construct(protected NoteService $service) {
+    }
+    public function index(Request $request) {
         $filter = new NoteFilter();
         $queryItems = $filter->transform($request);
-        if ($isAuth) {
-            $notes = Note::with('tags')->where($queryItems)->where('user_id', auth('sanctum')->id())->latest()->paginate(20);
-            $data = new NoteCollection($notes); //update data with notes if user found
-        }
+        $notes = Note::with('tags')->where($queryItems)->where('user_id', auth('sanctum')->id())->latest()->paginate(20);
+        $data = new NoteCollection($notes); //update data with notes if user found
 
-        return response($data);
+        return response()->json([
+            'data'=> $data,
+            'success'=> true
+        ]);
     }
 
 
-    /**
-     * Display the specified resource
-     * @param \App\Models\Note $note
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Note $note)
-    {
-        $content = null;
-        $status = 200;
 
-        if ($note->user_id === auth('sanctum')->id()) {
-            $content = new NoteResource($note);
-        } else {
-            $content = [
-                'success' => false,
-                'message' => "Requested record can't be found"
-            ];
-            $status = 404;
-        }
-        return response($content, $status);
+    public function show(Note $note) {
+        return response()->json([
+            'data'    => new NoteResource($note),
+            'success' => true
+        ]);
     }
     /**
      * Stores the incoming request
      */
-    public function store(StoreNoteRequest $request)
-    {
-        try {
-            $note = Note::create([
-                'user_id' => auth('sanctum')->id(),
-                'title' => $request->title,
-                'content' => $request->content,
-            ]);
-            $content = new NoteResource($note);
-        } catch (Exception $e) {
-            $content = [
-                'data' => null,
-                'success' => false,
-                'message' => $e->getMessage()
-            ];
-            return response($content, 400);
-        }
-        return response($content, 201);
+    public function store(NoteStoreApiRequest $request) {
+        $note = $this->service->store(NoteDto::transformStoreApiRequest($request));
+
+        return response()->json([
+            "data"    => new NoteResource($note),
+            "success" => true
+        ]);
     }
     /**
      * Updates the specified record
      */
-    public function update(UpdateNoteRequest $request, Note $note)
-    {
-        $content = null;
-        $status = 200;
-        if ($note->user_id === auth('sanctum')->id()) {
-            $note->update([
-                'title' => $request->title,
-                'content' => Crypt::encryptString($request->content),
-            ]);
-            $content = [
-                'success' => true,
-                'message' => "Record Updated"
-            ];
-        } else {
-            $content = [
-                'success' => false,
-                'message' => "Requested record can't be found"
-            ];
-            $status = 404;
-        }
-        return response($content, $status);
+    public function update(NoteUpdateApiRequest $request, Note $note) {
+        $note = $this
+            ->service
+            ->update(
+                note: $note,
+                dto: NoteDto::transformUpdateApiRequest($request)
+            );
+        return response()->json([
+            'data'    => new NoteResource($note),
+            'success' => true,
+            'message' => "Record Updated"
+        ]);
     }
 
-    public function destroy(Note $note)
-    {
-        $content = null;
-        $status = 200;
-
-        if ($note->user_id === auth('sanctum')->id()) {
-            $note->delete();
-            $content = [
-                'success' => true,
-                'message' => "Record Deleted"
-            ];
-        } else {
-            $content = [
-                'success' => false,
-                'message' => "Requested record can't be found"
-            ];
-            $status = 404;
-        }
-        return response($content, $status);
+    public function destroy(Note $note) {
+        $this->service->delete($note);
+        return response()->json([
+            'success' => true,
+            'message' => "Record Deleted"
+        ]);
     }
 }
