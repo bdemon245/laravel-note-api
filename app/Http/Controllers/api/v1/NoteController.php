@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers\api\v1;
 
-use App\Http\Requests\Note\Api\NoteUpdateApiRequest;
 use App\Models\Note;
 use App\DTOs\Note\NoteDto;
 use Illuminate\Http\Request;
 use App\Filters\v1\NoteFilter;
 use App\Services\Note\NoteService;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Crypt;
 use App\Http\Resources\v1\NoteResource;
 use App\Http\Resources\v1\NoteCollection;
-use App\Http\Requests\v1\StoreNoteRequest;
-use App\Http\Requests\v1\UpdateNoteRequest;
-use App\Http\Requests\Note\Api\NoteStoreApiRequest;
+use App\Http\Requests\Note\Api\NoteApiRequest;
+use App\Http\Requests\Note\Api\NoteUpdateApiRequest;
 
 class NoteController extends Controller {
     public function __construct(protected NoteService $service) {
@@ -26,8 +23,8 @@ class NoteController extends Controller {
         $data = new NoteCollection($notes); //update data with notes if user found
 
         return response()->json([
-            'data'=> $data,
-            'success'=> true
+            'data'    => $data,
+            'success' => true
         ]);
     }
 
@@ -42,8 +39,8 @@ class NoteController extends Controller {
     /**
      * Stores the incoming request
      */
-    public function store(NoteStoreApiRequest $request) {
-        $note = $this->service->store(NoteDto::transformStoreApiRequest($request));
+    public function store(NoteApiRequest $request) {
+        $note = $this->service->store(NoteDto::transformApiRequest($request));
 
         return response()->json([
             "data"    => new NoteResource($note),
@@ -53,12 +50,12 @@ class NoteController extends Controller {
     /**
      * Updates the specified record
      */
-    public function update(NoteUpdateApiRequest $request, Note $note) {
+    public function update(NoteApiRequest $request, Note $note) {
         $note = $this
             ->service
             ->update(
                 note: $note,
-                dto: NoteDto::transformUpdateApiRequest($request)
+                dto: NoteDto::transformApiRequest($request)
             );
         return response()->json([
             'data'    => new NoteResource($note),
